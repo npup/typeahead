@@ -1,0 +1,48 @@
+/**
+* typeahed widget
+*/
+/** list */
+.typeahead--list {
+  position: relative;
+  bottom: 1em;
+  list-style-type: none;
+  margin-left: 0px;
+  padding: 1em;
+  padding-bottom: 0; /* using margin-bottom on list's last-child instead */
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #f2f2f2;
+  border: 1px solid #dfdfdf;
+  border-radius: 6px;
+  width: 80%;
+  max-width: 40em;
+  max-height: 20em;
+  z-index: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.typeahead--list[data-typeahead--empty=true] {
+  display: none;
+}
+
+/** list items */
+.typeahead--list > li {
+  padding: .1em .4em;
+  cursor: pointer; /** ios madness */
+  border-radius: .15em;
+}
+.typeahead--list > li:last-child {
+  margin-bottom: 1em;
+}
+.typeahead--list > .typeahead--item-selected {
+  background-color: #337ab7;
+  color: #f2f2f2;
+}
+.typeahead--list > li + .typeahead--first-nontop-item {
+  border-top: 1px solid #aaa;
+  margin-top: .5em;
+}
+
+/** list item text, matching segment */
+.typeahead--matching-segment {
+  text-decoration: underline;
+}

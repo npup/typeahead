@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <title>ta</title>
+  <style>
+    html, html * { box-sizing: border-box; }
+    body { font-family: Arial, Sans-serif; }
+    input[type=text] { text-align: center; }
+    form {
+      margin: 1em;
+      padding: 1em;
+      border: 3px solid #ddd;
+      border-radius: .3em;
+      box-shadow: .5em .2em .2em #444;
+      max-width: 40em;
+    }
+  </style>
+  <link rel="stylesheet" href="dist/typeahead.css">
+</head>
+
+<body>
+  <h1>ta</h1>
+
+  <form action="#">
+    <input type="text" name="tags" id="tags"> <input type="submit" value="Search" >
+  </form>
+
+  <form action="#">
+    <input type="text" name="tags" id="tags2"> <input type="submit" value="Search" >
+  </form>
+
+  <input type="text" name="apa" id="unrelated">
+
+<script src="dist/typeahead.dev.js"></script>
+<script type="text/javascript">
+
+var ta = typeahead.create(window.tags, {
+  "tags": ["klantskalle", "anton", "skalman", "ekorre", "gris", "svin", "polka", "frigolit", "sune", "mangs", "bill", "bull", "kille", "killarna", "andersson", "andorra", "android", "ios", "macoit", "mac", "geekpride", "fornwall", "Gnurb", "Pappagrodan", "ENL", "RES", "Fields destroyed", "Eländes ENL!"]
+  , "__searchUrl": "http://localhost:8012/~petter/sandbox/typeahead/search.php?q="
+});
+var ta2 = typeahead.create(window.tags2, {
+  "tags": ["bio", "video", "tv", "film", "remsa", "kodak", "fuji", "projektor"].concat(["klantskalle", "anton", "skalman", "ekorre", "gris", "svin", "polka", "frigolit", "sune", "mangs", "bill", "bull", "kille", "killarna", "andersson", "andorra", "android", "ios", "macoit", "mac", "geekpride", "fornwall", "Gnurb", "Pappagrodan", "ENL", "RES", "Fields destroyed", "Eländes ENL!", "Envall", "Svinkall"])
+  , "__searchUrl": "http://localhost:8012/~petter/sandbox/typeahead/search.php?q="
+});
+</script>
+
+</body>
+</html>

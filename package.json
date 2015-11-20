@@ -1,0 +1,29 @@
+{
+  "name": "typeahead",
+  "version": "1.0.0",
+  "description": "Typeahead/suggestions for text inputs",
+  "main": "src/index.js",
+  "scripts": {
+    "clean": "rm -f dist/*",
+    "build": "browserify src/index.js --standalone typeahead -o dist/typeahead.dev.js && cp src/css/typeahead.css dist/ && browserify src/index.js --standalone typeahead | uglifyjs -m > dist/typeahead.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bundledDependencies": ["limiter"],
+  "dependencies": {
+    "limiter": "./lib/tar/limiter-1.0.0.tgz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npup/typeahead.git"
+  },
+  "keywords": [],
+  "author": "P. Envall <petter.envall@gmail.com> (http://petter.envall.se/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/npup/typeahead/issues"
+  },
+  "homepage": "https://github.com/npup/typeahead",
+  "devDependencies": {
+    "browserify": "^12.0.1"
+  }
+}
