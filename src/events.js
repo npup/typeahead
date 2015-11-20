@@ -74,7 +74,7 @@ module.exports = function (findWidget, doc, CSS, widgets) {
 
   return {
     "init": function () {
-          // TODO: Xbrowser addEventListener
+      // TODO: Xbrowser addEventListener
       doc.addEventListener("touchmove", function () { touchMove = true; }, false);
       doc.addEventListener("touchend", function () { touchMove = false; }, false);
       doc.addEventListener("mouseover", function (e) {

@@ -15,6 +15,8 @@
       border-radius: .3em;
       box-shadow: .5em .2em .2em #444;
       max-width: 40em;
+      width: 40em;
+      margin: 5em auto;
     }
   </style>
   <link rel="stylesheet" href="dist/typeahead.css">
@@ -24,14 +26,16 @@
   <h1>ta</h1>
 
   <form action="#">
-    <input type="text" name="tags" id="tags"> <input type="submit" value="Search" >
+    <input type="text" name="tags" id="tags" autofocus> <input type="submit" value="Search">
   </form>
 
   <form action="#">
     <input type="text" name="tags" id="tags2"> <input type="submit" value="Search" >
   </form>
 
-  <input type="text" name="apa" id="unrelated">
+  <form action="#">
+    <input type="text" name="apa" id="unrelated">
+  </form>
 
 <script src="dist/typeahead.dev.js"></script>
 <script type="text/javascript">

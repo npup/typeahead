@@ -1,5 +1,4 @@
 var doc = document
-  , docEl = doc.documentElement
   , widgets = {}
   , CSS = {
       "attr": {
@@ -17,18 +16,6 @@ var doc = document
         }
     };
 
-
-var events = require("./events")(findWidget, doc, CSS, widgets);
-
-function init(widget) {
-  widgets[widget.id] = widget;
-  if (init.done) { return widget; }
-  events.init();
-  init.done = true;
-  return widget;
-}
-
-function findWidgetById(id) { return widgets[id]; }
 function findWidgetForElement(elem) { return elem && elem != doc ? widgets[elem.getAttribute(CSS.attr.widgetId)] : null; }
 function findWidget(onlyOpen, elem) {
   var active = elem || doc.activeElement;
@@ -44,8 +31,17 @@ function findWidget(onlyOpen, elem) {
   return widget;
 }
 
-var Ui = require("./ui")(CSS)
+var events = require("./events")(findWidget, doc, CSS, widgets)
+  , Ui = require("./ui")(CSS)
   , Typeahead = require("./typeahead")(Ui);
+
+function init(widget) {
+  widgets[widget.id] = widget;
+  if (init.done) { return widget; }
+  events.init();
+  init.done = true;
+  return widget;
+}
 
 module.exports = {
   "create": function (input, options) {

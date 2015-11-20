@@ -106,7 +106,7 @@ module.exports = function (Ui) {
       }
     , "focusItem": function (idx) {
         var instance = this;
-        instance.selectedIndex = instance.ui.focusIdx(idx);
+        return instance.selectedIndex = instance.ui.focusIdx(idx);
       }
     , "getCurrentItem": function () {
         var instance = this;
