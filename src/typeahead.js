@@ -116,6 +116,7 @@ module.exports = function (Ui) {
         var instance = this;
         instance.ui.setText(text);
         instance.close();
+        "function" == typeof instance.options.onSelect && instance.options.onSelect.call(null, text);
       }
   };
 

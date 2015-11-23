@@ -1,5 +1,6 @@
 /**
-* TODO: behaviour should be:
+* behaviour:
+*
 * X  on filtering, top item is selected
 * X  arrow up/down/mouse-hover moves selection
 * X  mouse hover sets selected item
@@ -9,6 +10,8 @@
 * X  ESC closes any open list
 * X  avoid the long-timed debounce strategy for non-xhr-ed widgets
 * X  when selecting an item that is outside the viewport, scroll the viewport to make it visible
+* X  support for fireing callback for when something is autocompleted
+*
 *
 */
 
