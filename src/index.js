@@ -1,3 +1,17 @@
+/**
+* TODO: behaviour should be:
+* X  on filtering, top item is selected
+* X  arrow up/down/mouse-hover moves selection
+* X  mouse hover sets selected item
+* X  tab in textfield autocompletes+closes list (currently selected)
+* X  enter in textfield autocompletes+closes list (currently selected)
+* X  click on item autocompletes+closes list
+* X  ESC closes any open list
+* X  avoid the long-timed debounce strategy for non-xhr-ed widgets
+* X  when selecting an item that is outside the viewport, scroll the viewport to make it visible
+*
+*/
+
 var doc = document
   , widgets = {}
   , CSS = {
@@ -16,23 +30,15 @@ var doc = document
         }
     };
 
-function findWidgetForElement(elem) { return elem && elem != doc ? widgets[elem.getAttribute(CSS.attr.widgetId)] : null; }
-function findWidget(onlyOpen, elem) {
-  var active = elem || doc.activeElement;
-  if (!active) { return null; }
-  var tmp = active, attr;
-  while (tmp && tmp.parentNode && !(attr = tmp.getAttribute(CSS.attr.widgetId))) {
-    if (null != attr) { break; }
-    tmp = tmp.parentNode;
-  }
-  var widget = findWidgetForElement(tmp);
-  if (!widget) { return null; }
-  if (onlyOpen) { return widget.open ? widget : null; }
-  return widget;
-}
+var globals = {
+  "SCROLL_FLAG": false
+  , "doc": doc
+  , "CSS": CSS
+  , "widgets": widgets
+};
 
-var events = require("./events")(findWidget, doc, CSS, widgets)
-  , Ui = require("./ui")(CSS)
+var events = require("./events")(globals)
+  , Ui = require("./ui")(globals)
   , Typeahead = require("./typeahead")(Ui);
 
 function init(widget) {

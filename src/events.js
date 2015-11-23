@@ -1,6 +1,26 @@
 var debounce = require("limiter").debounce;
 
-module.exports = function (findWidget, doc, CSS, widgets) {
+module.exports = function (globals) {
+
+var CSS = globals.CSS
+  , widgets = globals.widgets
+  , doc = globals.doc;
+
+function findWidgetForElement(elem) { return elem && elem != doc ? widgets[elem.getAttribute(CSS.attr.widgetId)] : null; }
+function findWidget(onlyOpen, elem) {
+  var active = elem || doc.activeElement;
+  if (!active) { return null; }
+  var tmp = active, attr;
+  while (tmp && tmp.parentNode && !(attr = tmp.getAttribute(CSS.attr.widgetId))) {
+    if (null != attr) { break; }
+    tmp = tmp.parentNode;
+  }
+  var widget = findWidgetForElement(tmp);
+  if (!widget) { return null; }
+  if (onlyOpen) { return widget.open ? widget : null; }
+  return widget;
+}
+
 
   function setText(widget, item) {
     widget.setText(unescape(item.getAttribute(CSS.attr.itemValue)));
@@ -78,6 +98,10 @@ module.exports = function (findWidget, doc, CSS, widgets) {
       doc.addEventListener("touchmove", function () { touchMove = true; }, false);
       doc.addEventListener("touchend", function () { touchMove = false; }, false);
       doc.addEventListener("mouseover", function (e) {
+          if (globals.SCROLL_FLAG) {
+            globals.SCROLL_FLAG = false;
+            return;
+          }
           var tmp = e.target, itemIdx;
           while (tmp.parentNode) {
             if (itemIdx = tmp.getAttribute(CSS.attr.itemIndex)) { break; }

@@ -1,5 +1,10 @@
-module.exports = function (CSS) {
-  var doc = document;
+module.exports = function (globals) {
+  var doc = globals.doc
+    , CSS = globals.CSS;
+
+  function setScrollFlag(state) {
+    globals.SCROLL_FLAG = 0==arguments.length || !!state;
+  }
 
   var buildList = (function () {
     function buildListItem(tag, idx, query, isFirstSecondaryMatch) {
@@ -33,13 +38,42 @@ module.exports = function (CSS) {
   }());
 
   function scrollIntoViewIfNeeded(item) {
+    var itemRect = item.getBoundingClientRect(), vpHeight = doc.documentElement.clientHeight
+      , outOfBounds = Math.ceil(itemRect.bottom) - vpHeight
+      , scrollVp = 0;
+    if (0 < outOfBounds) {
+      scrollVp = outOfBounds;
+    }
+    else {
+      outOfBounds = Math.ceil(itemRect.top);
+      if (0 > outOfBounds) {
+        scrollVp = outOfBounds;
+      }
+    }
+    if (scrollVp) {
+      setScrollFlag();
+      window.scrollBy(0, scrollVp);
+    }
     var parent = item.parentNode;
-    if (!item.previousSibling) { return parent.scrollTop = 0; }
-    if (!item.nextSibling) { return parent.scrollTop = parent.clientHeight - parent.scrollTop; }
+    if (!item.previousSibling) {
+      setScrollFlag();
+      return parent.scrollTop = 0;
+    }
+    if (!item.nextSibling) {
+      setScrollFlag();
+      return parent.scrollTop = parent.clientHeight - parent.scrollTop;
+    }
     var y0 = parent.scrollTop, y1 = y0 + parent.clientHeight
       , itemTop = item.offsetTop, itemBottom = itemTop + item.clientHeight;
-    if (itemTop < y0) { parent.scrollTop -= y0-itemTop; }
-    else if (itemBottom > y1) { parent.scrollTop += itemBottom - y1; }
+    if (itemTop < y0) {
+      setScrollFlag();
+      parent.scrollTop -= y0-itemTop;
+    }
+    else if (itemBottom > y1) {
+      setScrollFlag();
+      parent.scrollTop += itemBottom - y1;
+    }
+
   }
 
   function Ui(widgetId, input) {
