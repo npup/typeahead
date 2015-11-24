@@ -39,18 +39,23 @@
 
 <script src="dist/typeahead.dev.js"></script>
 <script type="text/javascript">
-
-var ta = typeahead.create(window.tags, {
+;(function () {
+  var doc = document;
+  var ta = typeahead.create(doc.getElementById("tags"), {
   "tags": ["klantskalle", "anton", "skalman", "ekorre", "gris", "svin", "polka", "frigolit", "sune", "mangs", "bill", "bull", "kille", "killarna", "andersson", "andorra", "android", "ios", "macoit", "mac", "geekpride", "fornwall", "Gnurb", " Pappagrodan", "ENL", "RES", "Fields destroyed", "Eländes ENL!"]
     , "__searchUrl": "http://localhost:8012/~petter/sandbox/typeahead/search.php?q="
     , "onSelect": function (text) {
         console.log("you selected: %s", text);
       }
   });
-var ta2 = typeahead.create(window.tags2, {
+  var ta2 = typeahead.create(doc.getElementById("tags2"), {
   "tags": ["bio", "video", "tv", "film", "remsa", "kodak", "fuji", "projektor"].concat(["klantskalle", "anton", "skalman", "ekorre", "gris", "svin", "polka", "frigolit", "sune", "mangs", "bill", "bull", "kille", "killarna", "andersson", "andorra", "android", "ios", "macoit", "mac", "geekpride", "fornwall", "Gnurb", "Pappagrodan", "ENL", "RES", "Fields destroyed", "Eländes ENL!", "Envall", "Svinkall"])
   , "__searchUrl": "http://localhost:8012/~petter/sandbox/typeahead/search.php?q="
 });
+
+
+}());
+
 </script>
 
 </body>

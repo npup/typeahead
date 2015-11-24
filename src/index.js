@@ -12,6 +12,8 @@
 * X  when selecting an item that is outside the viewport, scroll the viewport to make it visible
 * X  support for fireing callback for when something is autocompleted
 *
+*     minChars options for minimum nr of chars to fire xhr search
+*     spinner indicator for xhr searches
 *
 */
 
@@ -24,7 +26,7 @@ var doc = document
           , "itemIndex": "data-typeahead--index"
           , "noMatches": "data-typeahead--empty"
         }
-      , "class": {
+      , "className": {
           "widget": "typeahead--list"
           , "firstSecondaryItem": "typeahead--first-nontop-item"
           , "primaryItem": "typeahead--top-item"

@@ -10,12 +10,12 @@ module.exports = function (globals) {
     function buildListItem(tag, idx, query, isFirstSecondaryMatch) {
       var li = doc.createElement("li");
       if (isFirstSecondaryMatch) {
-        isFirstSecondaryMatch && (li.className = CSS.class.firstSecondaryItem);
+        isFirstSecondaryMatch && (li.className = CSS.className.firstSecondaryItem);
       }
       else {
-        li.className = CSS.class.primaryItem;
+        li.className = CSS.className.primaryItem;
       }
-      li.innerHTML = tag.replace(new RegExp("("+query+")", "i"), "<span class=\""+CSS.class.matchingSegment+"\">$1</span>");
+      li.innerHTML = tag.replace(new RegExp("("+query+")", "i"), "<span class=\""+CSS.className.matchingSegment+"\">$1</span>");
       li.setAttribute(CSS.attr.itemValue, escape(tag));
       li.setAttribute(CSS.attr.itemIndex, idx);
       return li;
@@ -25,14 +25,15 @@ module.exports = function (globals) {
       try { hits && (hitsCount = hits.top.length+hits.other.length); }
       catch(err) { return 0; }
       if (0 == hitsCount) { return 0; }
-      var topHitsCount = hits.top.length;
-      // TODO: Xbrowser Array#forEach
-      hits.top.forEach(function (tag, idx) {
+      var topHitsCount = hits.top.length, tag, idx, len;
+      for (var idx=0, len=hits.top.length; idx<len; ++idx) {
+        tag = hits.top[idx];
         list.appendChild(buildListItem(tag, idx, query));
-      });
-      hits.other.forEach(function (tag, idx) {
+      }
+      for (idx=0, len=hits.other.length; idx<len; ++idx) {
+        tag = hits.other[idx];
         list.appendChild(buildListItem(tag, topHitsCount+idx, query, 0==idx));
-      });
+      }
       return hitsCount;
     };
   }());
@@ -76,6 +77,15 @@ module.exports = function (globals) {
 
   }
 
+  var selectedCSSExpr = new RegExp("\\b"+CSS.className.itemSelected+"\\b");
+  function findFocused(list) {
+    var items = list.childNodes, item;
+    for (var idx=0, len=items.length; idx<len; ++idx) {
+      item = items[idx];
+      if (selectedCSSExpr.test(item.className)) { return item; }
+    }
+  }
+
   function Ui(widgetId, input) {
     var instance = this;
     instance.input = input;
@@ -84,39 +94,45 @@ module.exports = function (globals) {
     input.setAttribute("autocomplete", "off");
     var list = instance.list = doc.createElement("ul");
     list.setAttribute(CSS.attr.widgetId, instance.widgetId);
-    list.className = CSS.class.widget;
+    list.className = CSS.className.widget;
   }
 
   Ui.prototype = {
     "constructor": Ui
     , "attach": function () {
-        var instance = this;
-        instance.input.parentNode.appendChild(instance.list);
+        var instance = this
+          , input = instance.input, list = instance.list
+          , parent = input.parentNode;
+        if (input.nextElementSibling) {
+          parent.insertBefore(list, input.nextElementSibling);
+        }
+        else {
+          parent.appendChild(list);
+        }
       }
     , "getQuery": function () {
         return this.input.value.replace(/^\s+(.+)$/, "$1").replace(/^(\S+)\s+$/, "$1");
       }
     , "focus": function () {
-        // TODO: Xbrowser querySelector
-        var firstItem = this.list.querySelector("li");
+        var firstItem = this.list.firstChild;
         firstItem && firstItem.focus();
       }
     , "focusIdx": function (idx) {
-        var elems = this.list.querySelectorAll("li")
+        var elems = this.list.childNodes
           , lastIdx = elems.length-1;
         if (0 > idx) {idx = lastIdx; }
         else if (idx > lastIdx) { idx = 0; }
-        var alreadyFocused = this.list.querySelector("li."+CSS.class.itemSelected);
+        var alreadyFocused = findFocused(this.list);
         if (alreadyFocused) {
-          alreadyFocused.className = alreadyFocused.className.replace(new RegExp("\\b"+CSS.class.itemSelected+"\\b"), "");
+          alreadyFocused.className = alreadyFocused.className.replace(selectedCSSExpr, "");
         }
         var item = elems[idx];
-        item.className += " "+CSS.class.itemSelected;
+        item.className += " "+CSS.className.itemSelected;
         scrollIntoViewIfNeeded(item);
         return idx;
       }
     , "itemAt": function (idx) {
-        return this.list.querySelectorAll("li")[idx];
+        return this.list.childNodes[idx];
       }
     , "focusInput": function () {
         this.input.focus();

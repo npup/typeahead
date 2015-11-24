@@ -24,6 +24,9 @@
 .typeahead--list[data-typeahead--empty=true] {
   display: none;
 }
+input[data-typeahead--searching=true] {
+  /* what */
+}
 
 /** list items */
 .typeahead--list > li {

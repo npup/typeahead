@@ -5,22 +5,48 @@ module.exports = function (Ui) {
     var stack = widget.options.tags
       , caseSensitive = widget.options.caseSensitive;
     needle = caseSensitive ? needle : needle.toLowerCase();
-    return stack.filter(function (tag) { // TODO: Xbrowser Array#filter
-      return needle && -1 < (caseSensitive?tag:tag.toLowerCase()).indexOf(needle);
-    });
+    if (!needle) { return []; }
+    var result = [], tag;
+    for (var idx=0, len=stack.length; idx<len; ++idx) {
+      tag = stack[idx];
+      if (-1 < (caseSensitive?tag:tag.toLowerCase()).indexOf(needle)) {
+        result.push(tag);
+      }
+    }
+    return result;
   }
-  function getRemoteHits(query, instance, callback) {
-    // TODO: Xbrowser xhr
-    var xhr = new XMLHttpRequest;
-    xhr.onreadystatechange = function () {
-      if (!(4==xhr.readyState && 200==xhr.status)) { return; }
-      var hits = [];
-      try { hits = JSON.parse(xhr.responseText); }
-      catch(err) { /**/ }
-      callback(hits);
+
+  var xhr =(function () {
+    var getXhr = (function () {
+      try {
+        new XMLHttpRequest;
+        return function () { return new XMLHttpRequest; };
+      }
+      catch(err) {
+        try {
+          new window.ActiveXObject("Microsoft.XMLHTTP");
+          return function () { return new ActiveXObject("Microsoft.XMLHTTP"); };
+        }
+        catch (err) { return function () {}; }
+      }
+    }());
+
+    return function (url, callback) {
+      var req = getXhr();
+      req.onreadystatechange = function () {
+        if (!(4==req.readyState && 200==req.status)) { return; }
+        var hits = [];
+        try { hits = JSON.parse(req.responseText); }
+        catch(err) { /**/ }
+        callback(hits);
+      };
+      req.open("GET", url, true);
+      req.send(null);
     };
-    xhr.open("GET", instance.options.searchUrl+query, true);
-    xhr.send(null);
+  }());
+
+  function getRemoteHits(query, instance, callback) {
+    xhr(instance.options.searchUrl+query, callback);
   }
 
   var mergeToUniques = (function () {
@@ -37,16 +63,16 @@ module.exports = function (Ui) {
       var turn = {"top": top, "other": other, "map": found};
       return turn;
     }
+    function mergeArray(query, arr, found, top, other) {
+      var data = uniq(arr, found, query);
+      for (var prop in data.found) { found[prop] = true; }
+      top.push.apply(top, data.top);
+      other.push.apply(other, data.other);
+    }
     return function (arr1, arr2, query) {
-      var found = {}
-        , top = [], other = [];
-      // TODO: Xbrowser Array#forEach
-      [arr1, arr2].forEach(function (arr) {
-        var data = uniq(arr, found, query);
-        for (var prop in data.found) { found[prop] = true; }
-        top = top.concat(data.top);
-        other = other.concat(data.other);
-      });
+      var found = {}, top = [], other = [];
+      mergeArray(query, arr1, found, top, other);
+      mergeArray(query, arr2, found, top, other);
       return {"top": top.sort(sortAlpha), "other": other.sort(sortAlpha)};
     };
   }());
@@ -88,9 +114,11 @@ module.exports = function (Ui) {
     "update": function () {
         var instance = this
           , str = instance.getQuery();
+        instance.ui.input.setAttribute("data-typeahead--searching", "true");
         source(str, instance, function (hits, query) {
           instance.hits = hits;
           render(instance, query);
+          instance.ui.input.removeAttribute("data-typeahead--searching");
         });
       }
     , "close": function () {

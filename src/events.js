@@ -27,7 +27,7 @@ function findWidget(onlyOpen, elem) {
   }
 
   var findListItem = (function () {
-    var expr = new RegExp("\\b"+CSS.class.widget+"\\b");
+    var expr = new RegExp("\\b"+CSS.className.widget+"\\b");
     function isListItem(elem) { return elem && elem.parentNode && expr.test(elem.parentNode.className); }
     return function findListItem(elem) {
       if (isListItem(elem)) { return elem; }
@@ -75,7 +75,8 @@ function findWidget(onlyOpen, elem) {
         , isShift = e.shiftKey, keyCode = e.keyCode;
       if (!(widget && "function"==typeof keys[keyCode])) { return; }
       if (!keys[keyCode](widget, e, isShift)) {
-        e.preventDefault();
+        if (e.preventDefault) { e.preventDefault(); }
+        else { e.returnValue = false; }
       }
     }
     return {
@@ -92,17 +93,31 @@ function findWidget(onlyOpen, elem) {
 
   var touchMove = false;
 
+  var listen = (function () {
+    var f;
+    if ("addEventListener" in doc.body) {
+      f = function (elem, eventName, handler) {
+        elem.addEventListener(eventName, handler, false);
+      };
+    }
+    else if ("attachEvent" in doc.body) {
+      f = function (elem, eventName, handler) {
+        elem.attachEvent("on"+eventName, handler);
+      };
+    }
+    return f;
+  }());
+
   return {
     "init": function () {
-      // TODO: Xbrowser addEventListener
-      doc.addEventListener("touchmove", function () { touchMove = true; }, false);
-      doc.addEventListener("touchend", function () { touchMove = false; }, false);
-      doc.addEventListener("mouseover", function (e) {
+      listen(doc, "touchmove", function () { touchMove = true; });
+      listen(doc, "touchend", function () { touchMove = false; });
+      listen(doc, "mouseover", function (e) {
           if (globals.SCROLL_FLAG) {
             globals.SCROLL_FLAG = false;
             return;
           }
-          var tmp = e.target, itemIdx;
+          var tmp = e.target || e.srcElement, itemIdx;
           while (tmp.parentNode) {
             if (itemIdx = tmp.getAttribute(CSS.attr.itemIndex)) { break; }
             tmp = tmp.parentNode;
@@ -111,24 +126,24 @@ function findWidget(onlyOpen, elem) {
           var widget = findWidget(true, tmp);
           widget && (widget.selectedIndex = widget.focusItem(parseInt(itemIdx, 10)));
         }
-        , false
       );
-      doc.addEventListener("keyup", debounce(keyHandlers.xhrEnabled, 700), false);
-      doc.addEventListener("keyup", debounce(keyHandlers.xhrDisabled, 200), false);
-      doc.addEventListener("keydown", keyHandlers.special, false);
-      doc.addEventListener("click", function (e) {
-        if (touchMove) { return false; }
-        var elem = e.target
-          , targetWidget = findWidget(true, elem), widget;
-        for (var widgetId in widgets) {
-          widget = widgets[widgetId];
-          targetWidget==widget || widget.close();
+      listen(doc, "keyup", debounce(keyHandlers.xhrEnabled, 700));
+      listen(doc, "keyup", debounce(keyHandlers.xhrDisabled, 200));
+      listen(doc, "keydown", keyHandlers.special);
+      listen(doc, "click", function (e) {
+          if (touchMove) { return false; }
+          var elem = e.target || e.srcElement
+            , targetWidget = findWidget(true, elem), widget;
+          for (var widgetId in widgets) {
+            widget = widgets[widgetId];
+            targetWidget==widget || widget.close();
+          }
+          var listItem = findListItem(elem);
+          if (targetWidget && listItem) {
+            setText(targetWidget, listItem);
+          }
         }
-        var listItem = findListItem(elem);
-        if (targetWidget && listItem) {
-          setText(targetWidget, listItem);
-        }
-      }, false);
+      );
     }
 
   };
