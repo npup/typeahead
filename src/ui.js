@@ -26,7 +26,7 @@ module.exports = function (globals) {
       catch(err) { return 0; }
       if (0 == hitsCount) { return 0; }
       var topHitsCount = hits.top.length, tag, idx, len;
-      for (var idx=0, len=hits.top.length; idx<len; ++idx) {
+      for (idx=0, len=hits.top.length; idx<len; ++idx) {
         tag = hits.top[idx];
         list.appendChild(buildListItem(tag, idx, query));
       }
@@ -148,7 +148,11 @@ module.exports = function (globals) {
         var nrOfItemsRendered = buildList(instance.list, hits, query)
           , matches = 0 < nrOfItemsRendered;
         instance.list.setAttribute(CSS.attr.noMatches, !matches);
-        matches && instance.focusIdx(0);
+        if (matches) {
+          instance.list.style.display = "block";
+          instance.focusIdx(0);
+        }
+        else { instance.list.style.display = ""; }
         return matches;
       }
   };
