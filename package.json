@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "clean": "rm -f dist/*",
-    "build": "browserify src/index.js --standalone typeahead -o dist/typeahead.dev.js && cp src/css/typeahead.css dist/ && browserify src/index.js --standalone typeahead | uglifyjs -m > dist/typeahead.js",
-    "watch": "watchify src/index.js --standalone typeahead -o dist/typeahead.dev.js && cp src/css/typeahead.css dist/ && browserify src/index.js --standalone typeahead | uglifyjs -m > dist/typeahead.js",
+    "build": "browserify src/index.js --standalone typeahead -o dist/typeahead.dev.js && cp src/css/typeahead.css dist/ && browserify src/index.js --standalone typeahead  > dist/typeahead.js",
+    "watch": "watchify src/index.js --standalone typeahead -o dist/typeahead.dev.js && cp src/css/typeahead.css dist/ && browserify src/index.js --standalone typeahead  > dist/typeahead.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bundledDependencies": [
